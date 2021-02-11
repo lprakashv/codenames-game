@@ -180,7 +180,7 @@
          Col
          {:sm 4}
          [:h2 [:> Badge {:variant :primary} (str "Blues left:" blue-left)]]]]
-       (grid board-tiles spy-master? turn-over?)
+       (grid board-tiles spy-master? (or (clojure.string/blank? hint) (< limit 1) turn-over?))
        [:>
         Row
         {:class-name :justify-content-md-center}
@@ -193,16 +193,14 @@
           [:>
            Button
            {:variant :warning :on-click #(re-frame/dispatch [::events/toggle-spy-master])}
-           "Spy Master"]
+           (if spy-master? "Over to team" "Spy Master")]
           (if spy-master?
             [:>
              Button
              {:disabled (not spy-master?)
-              :variant  (if spy-master?
-                          :secondary
-                          :dark)
+              :variant  :info
               :on-click #(re-frame/dispatch [::events/toggle-turn])}
-             "Toggle Turn"])]]]
+             (str "Make " (events/capitalize (events/opp-color turn)) "'s Turn")])]]]
        [:>
         Row
         [:>
