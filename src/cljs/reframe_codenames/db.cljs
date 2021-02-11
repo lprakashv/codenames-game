@@ -439,4 +439,5 @@
    :turn-over?  false
    :hint        ""
    :limit       0
-   :message     {:status :info :text "Spymaster please set the hint!"}})
+   :message     {:status :info :text "Spymaster please set the hint!"}
+   :game-over?  false})

@@ -17,3 +17,5 @@
 # shadow-cljs cache, port files
 /shadow-cljs.edn
 /.shadow-cljs/
+
+docs/js/compiled/cljs-runtime/

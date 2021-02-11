@@ -62,13 +62,13 @@
        (fn [index rule] [:p {:style {:text-align :left}} (str (inc index) ". " rule)])
        rules)]]]])
 
-(defn grid-row [row-index items spy-master? disable?]
+(defn grid-row [row-index items turn spy-master? disable?]
   [:>
    Row
    {:key (str "grid-row-" row-index) :class-name :justify-content-md-center}
    (map-indexed
     (fn [col-index item]
-      (let [open? (or (:open? item) spy-master?)
+      (let [open? (:open? item)
             color (:color item)]
         [:>
          Col
@@ -79,7 +79,7 @@
          [:>
           Button
           {:class    [:board-grid-btn]
-           :variant  :light
+           :variant  (if (and spy-master? open?) :dark :light)
            :style    (update
                       {:border-radius   2
                        :padding         5
@@ -87,17 +87,20 @@
                        :height          "10vmin"
                        :justify-content :center
                        :font-size       "2.5vmin"}
-                      :color (if open? (fn [_] color) identity))
-           :disabled (or open? disable?)
+                      :color (if (or open? spy-master?) (fn [_] color) identity))
+           :disabled (or spy-master? open? disable?)
            :size     :sm
-           :on-click #(re-frame/dispatch [::events/open-tile row-index col-index])}
+           :on-click #(re-frame/dispatch
+                       (if (= color :black)
+                         [::events/announce-winner (events/opp-color turn)]
+                         [::events/open-tile row-index col-index]))}
           (:word item)]]))
     items)])
 
-(defn grid [board-tiles spy-master? disable?]
+(defn grid [board-tiles turn spy-master? disable?]
   (->> (partition 5 board-tiles)
        (map-indexed
-        #(grid-row %1 %2 spy-master? disable?))))
+        #(grid-row %1 %2 turn spy-master? disable?))))
 
 (defn main-panel []
   (let [spy-master?  @(re-frame/subscribe [::subs/spy-master?])
@@ -118,7 +121,10 @@
         turn-over?   @(re-frame/subscribe [::subs/turn-over?])
         hint         @(re-frame/subscribe [::subs/hint])
         limit        @(re-frame/subscribe [::subs/limit])
-        message      @(re-frame/subscribe [::subs/message])]
+        message      @(re-frame/subscribe [::subs/message])
+        game-over?   @(re-frame/subscribe [::subs/game-over?])]
+    (when (zero? red-left) (re-frame/dispatch-sync [::events/announce-winner :red]))
+    (when (zero? blue-left) (re-frame/dispatch-sync [::events/announce-winner :blue]))
     [:>
      Card
      {:style {:border-radius 10 :margin 5}}
@@ -148,7 +154,7 @@
             "Hint"]]
           [:>
            FormControl
-           {:disabled  (or (not spy-master?) turn-over?)
+           {:disabled  (or game-over? (not spy-master?) turn-over?)
             :on-change #(re-frame/dispatch [::events/set-hint (-> % .-target .-value)])
             :value     hint}]
           [:>
@@ -158,7 +164,7 @@
             "Limit"]]
           [:>
            FormControl
-           {:disabled  (or (not spy-master?) turn-over?)
+           {:disabled  (or game-over? (not spy-master?) turn-over?)
             :on-change #(re-frame/dispatch [::events/set-limit (-> % .-target .-value)])
             :value     limit}]]]]
        [:>
@@ -180,7 +186,7 @@
          Col
          {:sm 4}
          [:h2 [:> Badge {:variant :primary} (str "Blues left:" blue-left)]]]]
-       (grid board-tiles spy-master? (or (clojure.string/blank? hint) (< limit 1) turn-over?))
+       (grid board-tiles turn spy-master? (or game-over? (clojure.string/blank? hint) (< limit 1) turn-over?))
        [:>
         Row
         {:class-name :justify-content-md-center}
@@ -190,15 +196,15 @@
          [:>
           ButtonGroup
           {:fluid :true :vertical :true :style {:margin 5}}
-          [:>
+          (if (not game-over?) [:>
            Button
            {:variant :warning :on-click #(re-frame/dispatch [::events/toggle-spy-master])}
-           (if spy-master? "Over to team" "Spy Master")]
-          (if spy-master?
+           (if spy-master? "Over to team" "Spy Master")])
+          (if (and (not game-over?) spy-master?)
             [:>
              Button
              {:disabled (not spy-master?)
-              :variant  :info
+              :variant  (if (= turn :red) :primary :danger)
               :on-click #(re-frame/dispatch [::events/toggle-turn])}
              (str "Make " (events/capitalize (events/opp-color turn)) "'s Turn")])]]]
        [:>
@@ -210,6 +216,7 @@
           Button
           {:fluid    true
            :variant  :success
+           :blink    true
            :style    {:margin 5}
            :on-click #(re-frame/dispatch [::events/initialize-db])}
           "New Game"]]]]]

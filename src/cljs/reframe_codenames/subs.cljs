@@ -41,3 +41,8 @@
  ::message
  (fn [db]
    (:message db)))
+
+(re-frame/reg-sub
+  ::game-over?
+ (fn [db]
+   (:game-over? db)))
