@@ -1,0 +1,16 @@
+{
+	"name": "reframe-codenames",
+	"devDependencies": {
+		"bootstrap": "4.4.1",
+		"bootstrap-switch-button-react": "1.2.0",
+		"react-bootstrap": "1.0.1",
+		"react-social-icons": "4.1.0",
+		"shadow-cljs": "2.11.7"
+	},
+	"dependencies": {
+		"highlight.js": "9.18.1",
+		"react": "16.14.0",
+		"react-dom": "16.14.0",
+		"react-highlight.js": "1.0.7"
+	}
+}
