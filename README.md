@@ -1,7 +1,7 @@
+<<<<<<< HEAD
 # reframe_codenames
 
-A [re-frame](https://github.com/day8/re-frame) application designed to ... well, that part is up to
-you.
+A static "Codenames Game" app built using Clojurescript and re-frame
 
 ## Getting Started
 
