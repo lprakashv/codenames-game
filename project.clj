@@ -25,23 +25,23 @@
   :source-paths ["src/clj" "src/cljs"]
 
   :clean-targets
-  ^{:protect false} ["resources/public/js/compiled"
+  ^{:protect false} ["docs/js/compiled"
                      "target"
-                     "resources/public/css"]
+                     "docs/css"]
 
 
   :garden
   {:builds [{:id           "screen"
              :source-paths ["src/clj"]
              :stylesheet   reframe-codenames.css/screen
-             :compiler     {:output-to     "resources/public/css/screen.css"
+             :compiler     {:output-to     "docs/css/screen.css"
                             :pretty-print? true}}]}
 
   :shadow-cljs
   {:nrepl  {:port 8777}
 
    :builds {:app {:target     :browser
-                  :output-dir "resources/public/js/compiled"
+                  :output-dir "docs/js/compiled"
                   :asset-path "/js/compiled"
                   :modules    {:app {:init-fn  reframe-codenames.core/init
                                      :preloads [devtools.preload
@@ -52,7 +52,7 @@
                                {:ns-aliases
                                 {day8.re-frame.tracing day8.re-frame.tracing-stubs}}}
 
-                  :devtools   {:http-root "resources/public"
+                  :devtools   {:http-root "docs"
                                :http-port 8280}}}}
 
   :shell
