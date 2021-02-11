@@ -79,7 +79,7 @@
          [:>
           Button
           {:class    [:board-grid-btn]
-           :variant  (if (and spy-master? open?) :dark :light)
+           :variant  (if (and spy-master? open?) :info :light)
            :style    (update
                       {:border-radius   2
                        :padding         5
