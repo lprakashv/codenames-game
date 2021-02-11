@@ -65,7 +65,11 @@
 (defn grid-row [row-index items turn spy-master? disable?]
   [:>
    Row
-   {:key (str "grid-row-" row-index) :class-name :justify-content-md-center}
+   {:key        (str "grid-row-" row-index)
+    :fluid      :true
+    :class-name :justify-content-md-center
+    :margin     5
+    :padding    5}
    (map-indexed
     (fn [col-index item]
       (let [open? (:open? item)
@@ -75,7 +79,7 @@
          {:key   (str "grid-cell-" (+ (* row-index 5) col-index))
           :sm    2
           :xs    2
-          :style {:margin 5 :padding 0}}
+          :style {:margin 1 :padding 1}}
          [:>
           Button
           {:class    [:board-grid-btn]
@@ -137,55 +141,73 @@
       {:style {:background-color (if spy-master? :black :lavender)}}
       [:>
        Container
-       {:style {:padding 10}}
-       [:>
-        Row
-        {:fluid :true :style {:margin 10} :class-name :justify-content-md-center}
-        [:>
-         Col
-         {:sm 12}
+       {:style {:padding 5}}
+       (if spy-master?
          [:>
-          InputGroup
-          {:size :lg}
+          Row
+          {:fluid :true :style {:margin 5} :class-name :justify-content-md-center}
           [:>
-           IGPrepend
+           Col
+           {:sm 12}
            [:>
-            IGText
-            "Hint"]]
+            InputGroup
+            {:size :sm}
+            [:>
+             IGPrepend
+             [:>
+              IGText
+              "Hint"]]
+            [:>
+             FormControl
+             {:disabled  (or game-over? (not spy-master?) turn-over?)
+              :on-change #(re-frame/dispatch [::events/set-hint (-> % .-target .-value)])
+              :value     hint}]
+            [:>
+             IGAppend
+             [:>
+              IGText
+              "Limit"]]
+            [:>
+             FormControl
+             {:disabled  (or game-over? (not spy-master?) turn-over?)
+              :on-change #(re-frame/dispatch [::events/set-limit (-> % .-target .-value)])
+              :value     limit}]]]])
+       (if (not spy-master?)
+         [:>
+          Row
+          {:fluid :true :style {:margin 5} :class-name :justify-content-md-center}
           [:>
-           FormControl
-           {:disabled  (or game-over? (not spy-master?) turn-over?)
-            :on-change #(re-frame/dispatch [::events/set-hint (-> % .-target .-value)])
-            :value     hint}]
+           Col
+           {:sm 6}
+           (if (not (clojure.string/blank? hint))
+             [:h2 [:> Badge {:variant :info} (str "Hint: " hint)]])]
           [:>
-           IGAppend
-           [:>
-            IGText
-            "Limit"]]
-          [:>
-           FormControl
-           {:disabled  (or game-over? (not spy-master?) turn-over?)
-            :on-change #(re-frame/dispatch [::events/set-limit (-> % .-target .-value)])
-            :value     limit}]]]]
+           Col
+           {:sm 6}
+           (if (not (zero? limit))
+             [:h2 [:> Badge {:variant :warning} (str "Limit: " limit)]])]])
        [:>
         Row
         {:fluid :true :style {:margin 5} :class-name :justify-content-md-center}
         [:>
          Col
-         {:sm 4}
+         {:sm 6}
          [:h2 [:> Badge {:variant :danger} (str "Reds left:" red-left)]]]
         [:>
          Col
-         {:sm 4}
+         {:sm 6}
+         [:h2 [:> Badge {:variant :primary} (str "Blues left:" blue-left)]]]]
+       [:>
+        Row
+        {:fluid :true :style {:margin 5} :class-name :justify-content-md-center}
+        [:>
+         Col
+         {:sm 12}
          [:h4
           [:>
            Badge
            {:variant (:status message) :style {:color :white}}
-           (:text message)]]]
-        [:>
-         Col
-         {:sm 4}
-         [:h2 [:> Badge {:variant :primary} (str "Blues left:" blue-left)]]]]
+           (:text message)]]]]
        (grid board-tiles turn spy-master? (or game-over? (clojure.string/blank? hint) (< limit 1) turn-over?))
        [:>
         Row
@@ -196,10 +218,11 @@
          [:>
           ButtonGroup
           {:fluid :true :vertical :true :style {:margin 5}}
-          (if (not game-over?) [:>
-           Button
-           {:variant :warning :on-click #(re-frame/dispatch [::events/toggle-spy-master])}
-           (if spy-master? "Over to team" "Spy Master")])
+          (if (not game-over?)
+            [:>
+             Button
+             {:variant :warning :on-click #(re-frame/dispatch [::events/toggle-spy-master])}
+             (if spy-master? "Over to team" "Spy Master")])
           (if (and (not game-over?) spy-master?)
             [:>
              Button
