@@ -18,7 +18,7 @@ jobs:
     - name: Run tests
       run: lein test
     - name: Prod Build
-      run: lein garden once, do clean, release
+      run: lein do clean, garden once, release
     - name: Deploy to Github Pages
       uses: peaceiris/actions-gh-pages@v3
       with:
