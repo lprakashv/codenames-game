@@ -1,19 +1,17 @@
 [![GitHub](https://img.shields.io/github/license/lprakashv/reframe-codenames?style=flat-square)](LICENSE)
 
 # reframe-codenames
-<p align="center"><img src="public/logo192.png/"></p>
+
+Logo coming soon...
 
 This is a Static Web app to play Codenames game built on top of **clojurescript** and **re-frame**.
 
 ### Screenshots
 Since, example speaks a thousand words!
 
-<p align="center">
-  <img width="620" src="demos/Webscreenshot.png"/>
-  <img width="270" src="demos/Mobscreencapture.gif"/>
-</p>
+Coming soon...
 
-[**Play it Now!**](https://lprakashv.github.io/codenames-spa/)
+[**Play it Now!**](https://lprakashv.github.io/reframe-codenames/)
 
 ### Features:
 * 400 built-in words.
