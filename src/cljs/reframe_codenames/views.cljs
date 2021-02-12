@@ -4,7 +4,8 @@
     [re-com.core :as re-com]
     [reframe-codenames.subs :as subs]
     [clojure.string :refer [join]]
-    [reframe-codenames.events :as events])
+    [reframe-codenames.events :as events]
+    [reframe-codenames.utils :as utils])
   (:require
     ["react-bootstrap"
      :refer
@@ -21,7 +22,8 @@
       Accordion
       Form
       FormControl
-      InputGroup]]
+      InputGroup
+      Alert]]
     ["react-bootstrap/Card" :refer [Text Body Header Footer Title Subtitle]]
     ["react-bootstrap/ListGroup" :refer [Item]]
     ["react-bootstrap/Accordion"
@@ -35,13 +37,8 @@
               Append  IGAppend}]
     ["react-social-icons" :refer [SocialIcon]]))
 
-(def rules ["Have 2 teams, one \"red\" (first turn) and the other blue."
-            "Choose a person randomly from each team as a spy-master, only he/she can use the spy-master button and see the color of all the words"
-            "The spy master gives a \"single\" word as a hint and and a number (say 3)."
-            "Then his/her team members choose/open different words (max 3, the number given by their spy master). Their turn gets over as soon as the team uncover any word of different color that their own team or they voluntarily end their turn."
-            "Goal of each team is to finish up their color words."
-            "There are 9 reds (first-turn), 8 blues, 7 greys (civilians) and one back (assassin) words."
-            "A team instantly loses if they uncover a black (assassin) word."])
+(def row-style
+  {:fluid :true :style {:margin 5} :class-name :justify-content-md-center})
 
 (defn header-rules []
   [:>
@@ -52,7 +49,7 @@
     [:>
      AccToggle
      {:as Header :eventKey "0"}
-     [:h4 "Rules"]]
+     [:h4 "Click to show/hide Rules"]]
     [:>
      AccCollapse
      {:eventKey "0"}
@@ -60,7 +57,7 @@
       Body
       (map-indexed
        (fn [index rule] [:p {:style {:text-align :left}} (str (inc index) ". " rule)])
-       rules)]]]])
+       utils/rules)]]]])
 
 (defn grid-row [row-index items turn spy-master? disable?]
   [:>
@@ -72,31 +69,31 @@
     :padding    5}
    (map-indexed
     (fn [col-index item]
-      (let [open? (:open? item)
-            color (:color item)]
+      (let [{:keys [open? color]} item]
         [:>
          Col
          {:key   (str "grid-cell-" (+ (* row-index 5) col-index))
-          :sm    2
-          :xs    2
-          :style {:margin 1 :padding 1}}
+          :style {:width   "20vw"
+                  :padding 0
+                  :margin  2}}
          [:>
           Button
-          {:class    [:board-grid-btn]
+          {:key      (str "grid-cell-" (+ (* row-index 5) col-index))
+           :class    [:board-grid-btn]
            :variant  (if (and spy-master? open?) :info :light)
            :style    (update
                       {:border-radius   2
                        :padding         5
                        :width           "100%"
-                       :height          "10vmin"
+                       :height          "10vh"
                        :justify-content :center
-                       :font-size       "2.5vmin"}
+                       :font-size       "2.3vmin"}
                       :color (if (or open? spy-master?) (fn [_] color) identity))
            :disabled (or spy-master? open? disable?)
            :size     :sm
            :on-click #(re-frame/dispatch
                        (if (= color :black)
-                         [::events/announce-winner (events/opp-color turn)]
+                         [::events/announce-winner (utils/opp-color turn)]
                          [::events/open-tile row-index col-index]))}
           (:word item)]]))
     items)])
@@ -110,18 +107,8 @@
   (let [spy-master?  @(re-frame/subscribe [::subs/spy-master?])
         board-tiles  @(re-frame/subscribe [::subs/board])
         turn         @(re-frame/subscribe [::subs/turn])
-        red-left     (->> board-tiles
-                          (filter
-                           #(and
-                             (not (:open? %))
-                             (= :red (:color %))))
-                          (count))
-        blue-left    (->> board-tiles
-                          (filter
-                           #(and
-                             (not (:open? %))
-                             (= :blue (:color %))))
-                          (count))
+        red-left     (utils/left-tiles-count-by-color board-tiles :red)
+        blue-left    (utils/left-tiles-count-by-color board-tiles :blue)
         turn-over?   @(re-frame/subscribe [::subs/turn-over?])
         hint         @(re-frame/subscribe [::subs/hint])
         limit        @(re-frame/subscribe [::subs/limit])
@@ -145,7 +132,7 @@
        (if spy-master?
          [:>
           Row
-          {:fluid :true :style {:margin 5} :class-name :justify-content-md-center}
+          row-style
           [:>
            Col
            {:sm 12}
@@ -175,7 +162,7 @@
        (if (not spy-master?)
          [:>
           Row
-          {:fluid :true :style {:margin 5} :class-name :justify-content-md-center}
+          row-style
           [:>
            Col
            {:sm 6}
@@ -188,7 +175,7 @@
              [:h2 [:> Badge {:variant :warning} (str "Limit: " limit)]])]])
        [:>
         Row
-        {:fluid :true :style {:margin 5} :class-name :justify-content-md-center}
+        row-style
         [:>
          Col
          {:sm 6}
@@ -199,15 +186,11 @@
          [:h2 [:> Badge {:variant :primary} (str "Blues left:" blue-left)]]]]
        [:>
         Row
-        {:fluid :true :style {:margin 5} :class-name :justify-content-md-center}
+        row-style
         [:>
-         Col
-         {:sm 12}
-         [:h4
-          [:>
-           Badge
-           {:variant (:status message) :style {:color :white}}
-           (:text message)]]]]
+         Alert
+         {:sm 12 :variant (:status message)}
+         [:h4 (:text message)]]]
        (grid board-tiles turn spy-master? (or game-over? (clojure.string/blank? hint) (< limit 1) turn-over?))
        [:>
         Row
@@ -229,7 +212,7 @@
              {:disabled (not spy-master?)
               :variant  (if (= turn :red) :primary :danger)
               :on-click #(re-frame/dispatch [::events/toggle-turn])}
-             (str "Make " (events/capitalize (events/opp-color turn)) "'s Turn")])]]]
+             (str "Make " (utils/capitalize (utils/opp-color turn)) "'s Turn")])]]]
        [:>
         Row
         [:>
