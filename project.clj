@@ -13,7 +13,8 @@
                  [day8.re-frame/http-fx "0.2.2"]
                  [re-com "2.9.0"]
                  [garden "1.3.10"]
-                 [ns-tracker "0.4.0"]]
+                 [ns-tracker "0.4.0"]
+                 [clj-kondo "RELEASE"]]
 
   :plugins
   [[lein-shadow "0.3.1"]
@@ -93,7 +94,8 @@
                    "prod"
                    "do"
                    ["shadow" "compile" "karma-test"]
-                   ["shell" "karma" "start" "--single-run" "--reporters" "junit,dots"]]}
+                   ["shell" "karma" "start" "--single-run" "--reporters" "junit,dots"]]
+   "clj-kondo"    ["run" "-m" "clj-kondo.main" "--lint" "src"]}
 
   :profiles
   {:dev

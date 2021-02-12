@@ -1,9 +1,7 @@
 (ns reframe-codenames.views
   (:require
     [re-frame.core :as re-frame]
-    [re-com.core :as re-com]
     [reframe-codenames.subs :as subs]
-    [clojure.string :refer [join]]
     [reframe-codenames.events :as events]
     [reframe-codenames.utils :as utils])
   (:require
@@ -12,20 +10,15 @@
      [Card
       Button
       ButtonGroup
-      ListGroup
       Row
       Col
       Badge
       Container
-      Jumbotron
-      ToggleButton
       Accordion
-      Form
       FormControl
       InputGroup
       Alert]]
-    ["react-bootstrap/Card" :refer [Text Body Header Footer Title Subtitle]]
-    ["react-bootstrap/ListGroup" :refer [Item]]
+    ["react-bootstrap/Card" :refer [Body Header Footer]]
     ["react-bootstrap/Accordion"
      :refer  [Toggle Collapse]
      :rename {Toggle   AccToggle
@@ -158,7 +151,8 @@
              FormControl
              {:disabled  (or game-over? (not spy-master?) turn-over?)
               :on-change #(re-frame/dispatch [::events/set-limit (-> % .-target .-value)])
-              :value     limit}]]]])
+              :value     limit}]]]]
+         nil)
        (if (not spy-master?)
          [:>
           Row
@@ -167,12 +161,15 @@
            Col
            {:sm 6}
            (if (not (clojure.string/blank? hint))
-             [:h2 [:> Badge {:variant :info} (str "Hint: " hint)]])]
+             [:h2 [:> Badge {:variant :info} (str "Hint: " hint)]]
+             nil)]
           [:>
            Col
            {:sm 6}
            (if (not (zero? limit))
-             [:h2 [:> Badge {:variant :warning} (str "Limit: " limit)]])]])
+             [:h2 [:> Badge {:variant :warning} (str "Limit: " limit)]]
+             nil)]]
+         nil)
        [:>
         Row
         row-style
@@ -205,14 +202,16 @@
             [:>
              Button
              {:variant :warning :on-click #(re-frame/dispatch [::events/toggle-spy-master])}
-             (if spy-master? "Over to team" "Spy Master")])
+             (if spy-master? "Over to team" "Spy Master")]
+            nil)
           (if (and (not game-over?) spy-master?)
             [:>
              Button
              {:disabled (not spy-master?)
               :variant  (if (= turn :red) :primary :danger)
               :on-click #(re-frame/dispatch [::events/toggle-turn])}
-             (str "Make " (utils/capitalize (utils/opp-color turn)) "'s Turn")])]]]
+             (str "Make " (utils/capitalize (utils/opp-color turn)) "'s Turn")
+             nil])]]]
        [:>
         Row
         [:>
