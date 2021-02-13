@@ -18,7 +18,6 @@ A static "Codenames Game" app built using Clojurescript and re-frame
   [Reagent](https://github.com/reagent-project/reagent) ->
   [React](https://github.com/facebook/react)
   - CSS rendering: [Garden](https://github.com/noprompt/garden)
-  - UI components: [re-com](https://github.com/day8/re-com)
 * Build tools
   - Project task & dependency management: [Leiningen](https://github.com/technomancy/leiningen)
   - CLJS compilation, REPL, & hot reload: [`shadow-cljs`](https://github.com/thheller/shadow-cljs)
@@ -37,7 +36,6 @@ A static "Codenames Game" app built using Clojurescript and re-frame
 * [`resources/public/`](resources/public/): SPA root directory;
 [dev](#running-the-app) / [prod](#production) profile depends on the most recent build
   - [`vendor/`](resources/public/vendor/): UI component CSS, fonts, and images
-  ([re-com](https://github.com/day8/re-com))
   - [`index.html`](resources/public/index.html): SPA home page
     - Dynamic SPA content rendered in the following `div`:
         ```html

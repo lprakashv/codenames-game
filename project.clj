@@ -11,7 +11,6 @@
                  [re-frame "1.1.2"]
                  [day8.re-frame/tracing "0.6.0"]
                  [day8.re-frame/http-fx "0.2.2"]
-                 [re-com "2.9.0"]
                  [garden "1.3.10"]
                  [ns-tracker "0.4.0"]
                  [clj-kondo "RELEASE"]]

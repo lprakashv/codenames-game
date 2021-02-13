@@ -30,10 +30,12 @@
               Append  IGAppend}]
     ["react-social-icons" :refer [SocialIcon]]))
 
+; TODO - simplify booleans everywhere!
+
 (def row-style
   {:fluid :true :style {:margin 5} :class-name :justify-content-md-center})
 
-(defn header-rules []
+(defn header-rules [rules]
   [:>
    Accordion
    {:defaultActiveKey "0"}
@@ -50,7 +52,7 @@
       Body
       (map-indexed
        (fn [index rule] [:p {:style {:text-align :left}} (str (inc index) ". " rule)])
-       utils/rules)]]]])
+       rules)]]]])
 
 (defn grid-row [row-index items turn spy-master? disable?]
   [:>
@@ -74,17 +76,17 @@
           {:key      (str "grid-cell-" (+ (* row-index 5) col-index))
            :class    [:board-grid-btn]
            :variant  (if (and spy-master? open?) :info :light)
-           :style    (update
-                      {:border-radius   2
-                       :padding         5
-                       :width           "100%"
-                       :height          "10vh"
-                       :justify-content :center
-                       :font-size       "2.3vmin"}
-                      :color (if (or open? spy-master?) (fn [_] color) identity))
+           :style    {:border-radius   2
+                      :padding         5
+                      :width           "100%"
+                      :height          "10vh"
+                      :justify-content :center
+                      :font-size       "2.3vmin"
+                      :color           (when (or open? spy-master?) color)}
            :disabled (or spy-master? open? disable?)
            :size     :sm
            :on-click #(re-frame/dispatch
+                       ; TODO - remove logic from view!
                        (if (= color :black)
                          [::events/announce-winner (utils/opp-color turn)]
                          [::events/open-tile row-index col-index]))}
@@ -97,6 +99,7 @@
         #(grid-row %1 %2 turn spy-master? disable?))))
 
 (defn main-panel []
+  ; TODO - split this main-panel into multpple functions having their own subscriptions
   (let [spy-master?  @(re-frame/subscribe [::subs/spy-master?])
         board-tiles  @(re-frame/subscribe [::subs/board])
         turn         @(re-frame/subscribe [::subs/turn])
@@ -115,14 +118,14 @@
      [:>
       Header
       [:h1 {:style {:background-color :gold :padding 10}} "Codenames Game"]
-      (header-rules)]
+      (header-rules utils/rules)]
      [:>
       Body
       {:style {:background-color (if spy-master? :black :lavender)}}
       [:>
        Container
        {:style {:padding 5}}
-       (if spy-master?
+       (when spy-master?
          [:>
           Row
           row-style
@@ -151,25 +154,21 @@
              FormControl
              {:disabled  (or game-over? (not spy-master?) turn-over?)
               :on-change #(re-frame/dispatch [::events/set-limit (-> % .-target .-value)])
-              :value     limit}]]]]
-         nil)
-       (if (not spy-master?)
+              :value     limit}]]]])
+       (when (not spy-master?)
          [:>
           Row
           row-style
           [:>
            Col
            {:sm 6}
-           (if (not (clojure.string/blank? hint))
-             [:h2 [:> Badge {:variant :info} (str "Hint: " hint)]]
-             nil)]
+           (when (not (clojure.string/blank? hint))
+             [:h2 [:> Badge {:variant :info} (str "Hint: " hint)]])]
           [:>
            Col
            {:sm 6}
-           (if (not (zero? limit))
-             [:h2 [:> Badge {:variant :warning} (str "Limit: " limit)]]
-             nil)]]
-         nil)
+           (when (not (zero? limit))
+             [:h2 [:> Badge {:variant :warning} (str "Limit: " limit)]])]])
        [:>
         Row
         row-style
@@ -188,6 +187,7 @@
          Alert
          {:sm 12 :variant (:status message)}
          [:h4 (:text message)]]]
+       ; TODO - remove logic from views (or make this a separate function)
        (grid board-tiles turn spy-master? (or game-over? (clojure.string/blank? hint) (< limit 1) turn-over?))
        [:>
         Row
@@ -198,20 +198,18 @@
          [:>
           ButtonGroup
           {:fluid :true :vertical :true :style {:margin 5}}
-          (if (not game-over?)
+          (when (not game-over?)
             [:>
              Button
              {:variant :warning :on-click #(re-frame/dispatch [::events/toggle-spy-master])}
-             (if spy-master? "Over to team" "Spy Master")]
-            nil)
-          (if (and (not game-over?) spy-master?)
+             (if spy-master? "Over to team" "Spy Master")])
+          (when (and (not game-over?) spy-master?)
             [:>
              Button
              {:disabled (not spy-master?)
               :variant  (if (= turn :red) :primary :danger)
               :on-click #(re-frame/dispatch [::events/toggle-turn])}
-             (str "Make " (utils/capitalize (utils/opp-color turn)) "'s Turn")
-             nil])]]]
+             (str "Make " (utils/capitalize (utils/opp-color turn)) "'s Turn")])]]]
        [:>
         Row
         [:>

@@ -2,6 +2,8 @@
   (:require
     [re-frame.core :as re-frame]))
 
+; TODO - improve all the subs taking other subscribe as signal functions
+
 (re-frame/reg-sub
  ::name
  (fn [db]
@@ -43,6 +45,6 @@
    (:message db)))
 
 (re-frame/reg-sub
-  ::game-over?
+ ::game-over?
  (fn [db]
    (:game-over? db)))
