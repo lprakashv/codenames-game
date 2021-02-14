@@ -35,7 +35,7 @@
 (def row-style
   {:fluid :true :style {:margin 5} :class-name :justify-content-md-center})
 
-(defn header-rules [rules]
+(defn rules-header [rules]
   [:>
    Accordion
    {:defaultActiveKey "0"}
@@ -81,7 +81,7 @@
                       :width           "100%"
                       :height          "10vh"
                       :justify-content :center
-                      :font-size       "2.3vmin"
+                      :font-size       "2.5vmin"
                       :color           (when (or open? spy-master?) color)}
            :disabled (or spy-master? open? disable?)
            :size     :sm
@@ -97,6 +97,74 @@
   (->> (partition 5 board-tiles)
        (map-indexed
         #(grid-row %1 %2 turn spy-master? disable?))))
+
+(defn hint-badge [hint]
+  (when (not (clojure.string/blank? hint))
+    [:h2 [:> Badge {:variant :info} (str "Hint: " hint)]]))
+
+(defn limit-left-badge [limit]
+  (when (not (zero? limit))
+    [:h2 [:> Badge {:variant :warning} (str "Limit: " limit)]]))
+
+(defn reds-left-count-badge [cnt]
+  [:h2 [:> Badge {:variant :danger} (str "Reds left:" cnt)]])
+
+(defn blues-left-count-badge [cnt]
+  [:h2 [:> Badge {:variant :primary} (str "Blues left:" cnt)]])
+
+(defn hint-limit-input-group [hint limit spy-master? game-over? turn-over?]
+  [:>
+   InputGroup
+   {:size :sm}
+   [:>
+    IGPrepend
+    [:>
+     IGText
+     "Hint"]]
+   [:>
+    FormControl
+    {:disabled  (or game-over? (not spy-master?) turn-over?)
+     :on-change #(re-frame/dispatch [::events/set-hint (-> % .-target .-value)])
+     :value     hint}]
+   [:>
+    IGAppend
+    [:>
+     IGText
+     "Limit"]]
+   [:>
+    FormControl
+    {:disabled  (or game-over? (not spy-master?) turn-over?)
+     :on-change #(re-frame/dispatch [::events/set-limit (-> % .-target .-value)])
+     :value     limit}]])
+
+(defn spy-master-toggle-button [game-over? spy-master?]
+  (when (not game-over?)
+    [:>
+     Button
+     {:variant :warning :on-click #(re-frame/dispatch [::events/toggle-spy-master])}
+     (if spy-master? "Over to team" "Spy Master")]))
+
+(defn turn-change-button [turn game-over? spy-master?]
+  (when (and (not game-over?) spy-master?)
+    [:>
+     Button
+     {:disabled (not spy-master?)
+      :variant  (if (= turn :red) :primary :danger)
+      :on-click #(re-frame/dispatch [::events/toggle-turn])}
+     (str "Make " (utils/capitalize (utils/opp-color turn)) "'s Turn")]))
+
+(defn new-game-button []
+  [:>
+   Button
+   {:fluid    true
+    :variant  :success
+    :style    {:margin 5}
+    :on-click #(re-frame/dispatch [::events/initialize-db])}
+   "New Game"])
+
+(defn contact-footer [name label-with-url-list]
+  [:p {:class-name :text-muted} (str "Creator: " name)]
+  (map (fn [attrs] [:> SocialIcon attrs]) label-with-url-list))
 
 (defn main-panel []
   ; TODO - split this main-panel into multpple functions having their own subscriptions
@@ -118,74 +186,49 @@
      [:>
       Header
       [:h1 {:style {:background-color :gold :padding 10}} "Codenames Game"]
-      (header-rules utils/rules)]
+      (rules-header utils/rules)]
      [:>
       Body
       {:style {:background-color (if spy-master? :black :lavender)}}
       [:>
        Container
        {:style {:padding 5}}
-       (when spy-master?
+       (if spy-master?
          [:>
           Row
           row-style
           [:>
            Col
-           {:sm 12}
-           [:>
-            InputGroup
-            {:size :sm}
-            [:>
-             IGPrepend
-             [:>
-              IGText
-              "Hint"]]
-            [:>
-             FormControl
-             {:disabled  (or game-over? (not spy-master?) turn-over?)
-              :on-change #(re-frame/dispatch [::events/set-hint (-> % .-target .-value)])
-              :value     hint}]
-            [:>
-             IGAppend
-             [:>
-              IGText
-              "Limit"]]
-            [:>
-             FormControl
-             {:disabled  (or game-over? (not spy-master?) turn-over?)
-              :on-change #(re-frame/dispatch [::events/set-limit (-> % .-target .-value)])
-              :value     limit}]]]])
-       (when (not spy-master?)
+           {:style {:width "100vw"}}
+           (hint-limit-input-group hint limit spy-master? game-over? turn-over?)]]
          [:>
           Row
           row-style
           [:>
            Col
-           {:sm 6}
-           (when (not (clojure.string/blank? hint))
-             [:h2 [:> Badge {:variant :info} (str "Hint: " hint)]])]
+           {:style {:width "50vw"}}
+           (hint-badge hint)]
           [:>
            Col
-           {:sm 6}
-           (when (not (zero? limit))
-             [:h2 [:> Badge {:variant :warning} (str "Limit: " limit)]])]])
+           {:style {:width "50vw"}}
+           (limit-left-badge limit)]])
        [:>
         Row
         row-style
         [:>
          Col
-         {:sm 6}
-         [:h2 [:> Badge {:variant :danger} (str "Reds left:" red-left)]]]
+         {:style {:width "50vw"}}
+         (reds-left-count-badge red-left)]
         [:>
          Col
-         {:sm 6}
-         [:h2 [:> Badge {:variant :primary} (str "Blues left:" blue-left)]]]]
+         {:style {:width "50vw"}}
+         (blues-left-count-badge blue-left)]]
        [:>
         Row
         row-style
         [:>
          Alert
-         {:sm 12 :variant (:status message)}
+         {:style {:width "100vw"} :variant (:status message)}
          [:h4 (:text message)]]]
        ; TODO - remove logic from views (or make this a separate function)
        (grid board-tiles turn spy-master? (or game-over? (clojure.string/blank? hint) (< limit 1) turn-over?))
@@ -194,47 +237,22 @@
         {:class-name :justify-content-md-center}
         [:>
          Col
-         {:sm 12}
+         {:style {:width "100vw"}}
          [:>
           ButtonGroup
           {:fluid :true :vertical :true :style {:margin 5}}
-          (when (not game-over?)
-            [:>
-             Button
-             {:variant :warning :on-click #(re-frame/dispatch [::events/toggle-spy-master])}
-             (if spy-master? "Over to team" "Spy Master")])
-          (when (and (not game-over?) spy-master?)
-            [:>
-             Button
-             {:disabled (not spy-master?)
-              :variant  (if (= turn :red) :primary :danger)
-              :on-click #(re-frame/dispatch [::events/toggle-turn])}
-             (str "Make " (utils/capitalize (utils/opp-color turn)) "'s Turn")])]]]
+          (spy-master-toggle-button game-over? spy-master?)
+          (turn-change-button turn game-over? spy-master?)]]]
        [:>
         Row
         [:>
          Col
-         {:sm 12}
-         [:>
-          Button
-          {:fluid    true
-           :variant  :success
-           :blink    true
-           :style    {:margin 5}
-           :on-click #(re-frame/dispatch [::events/initialize-db])}
-          "New Game"]]]]]
+         {:style {:width "100vw"}}
+         (new-game-button)]]]]
      [:>
       Footer
-      [:p {:class-name :text-muted} "Creator: Lalit Prakash Vatsal"]
-      [:>
-       SocialIcon
-       {:url "https://twitter.com/lprakashv" :label :twitter}]
-      [:>
-       SocialIcon
-       {:url "https://medium.com/@lprakashv" :label :medium}]
-      [:>
-       SocialIcon
-       {:url "https://www.linkedin.com/in/lalit-vatsal-ab921879/" :label :linkedin}]
-      [:>
-       SocialIcon
-       {:url "https://github.com/lprakashv" :label :github}]]]))
+      (contact-footer "Lalit Prakash Vatsal"
+                      [{:label :twitter :url "https://twitter.com/lprakashv"}
+                       {:label :linkedin :url "https://www.linkedin.com/in/lalit-vatsal-ab921879/"}
+                       {:label :github :url "https://github.com/lprakashv"}
+                       {:label :medium :url "https://medium.com/@lprakashv"}])]]))
