@@ -2,14 +2,32 @@
 
 # reframe-codenames
 
-Logo coming soon...
-
 This is a Static Web app to play Codenames game built on top of **clojurescript** and **re-frame**.
 
 ### Screenshots
 Since, example speaks a thousand words!
 
-Coming soon...
+<table>
+    <tr>
+        <img src="demo/Screenshot_2021-02-17_reframe_codenames_1.png" />
+    </tr>
+    <tr>
+        <td><img src="demo/Screenshot_2021-02-17_reframe_codenames_2.png" /></td>
+        <td><img src="demo/Screenshot_2021-02-17_reframe_codenames_3.png" /></td>
+    </tr>
+    <tr>
+        <td><img src="demo/Screenshot_2021-02-17_reframe_codenames_4.png" /></td>
+        <td><img src="demo/Screenshot_2021-02-17_reframe_codenames_5.png" /></td>
+    </tr>
+    <tr>
+        <td><img src="demo/Screenshot_2021-02-17_reframe_codenames_7.png" /></td>
+        <td><img src="demo/Screenshot_2021-02-17_reframe_codenames_8.png" /></td>
+    </tr>
+    <tr>
+        <td><img src="demo/Screenshot_2021-02-17_reframe_codenames_9.png" /></td>
+        <td><img src="demo/Screenshot_2021-02-17_reframe_codenames_10.png" /></td>
+    </tr>
+</table>
 
 [**Play it Now!**](https://lprakashv.github.io/reframe-codenames/)
 
