@@ -9,13 +9,13 @@
 (defn get-messsage-for-type
   ([tpe]
    (case tpe
-     :open-tile-turn-over   {:status :info
-                             :text   "Turn over! Spymaster, toggle turn and set hint."}
+     :open-tile-turn-over {:status :info
+                           :text   "Turn over! Spymaster, toggle turn and set hint."}
      :spy-master-exit-error {:status :warning :text "Add hint with a number"}))
   ([tpe arg]
    (case tpe
-     :turn-message        {:status (if (= arg :red) :danger :primary)
-                           :text   (str (capitalize arg) "'s turn")}
+     :turn-message {:status (if (= arg :red) :danger :primary)
+                    :text   (str (capitalize arg) "'s turn")}
      :winner-announcement {:status :success
                            :text   (str "Game over. Winner is " (capitalize arg) "!")})))
 
@@ -30,7 +30,7 @@
 (defn left-tiles-count-by-color [board-tiles color]
   (->> board-tiles
        (filter
-        #(and
-          (not (:open? %))
-          (= color (:color %))))
+         #(and
+            (not (:open? %))
+            (= color (:color %))))
        (count)))

@@ -2,4 +2,4 @@
   (:require [garden.def :refer [defstyles]]))
 
 (defstyles screen
-  [:.App {:text-align "center"}])
+           [:.App {:text-align "center"}])

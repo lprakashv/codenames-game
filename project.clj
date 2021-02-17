@@ -98,9 +98,9 @@
 
   :profiles
   {:dev
-   {:dependencies [[binaryage/devtools "1.0.2"]
-                   [re-frisk "1.3.4"]]
-    :source-paths ["dev"]}
+         {:dependencies [[binaryage/devtools "1.0.2"]
+                         [re-frisk "1.3.4"]]
+          :source-paths ["dev"]}
 
    :prod {}}
 

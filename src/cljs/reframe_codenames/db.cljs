@@ -408,28 +408,28 @@
        (take n)))
 
 (defn- take-colored-words []
-  (let [w     (take-rand-n words 25 [])
-        red   (take-rand-n w 9 [])
-        blue  (take-rand-n w 8 red)
-        grey  (take-rand-n w 7 (concat red blue))
+  (let [w (take-rand-n words 25 [])
+        red (take-rand-n w 9 [])
+        blue (take-rand-n w 8 red)
+        grey (take-rand-n w 7 (concat red blue))
         black (take-rand-n w 1 (concat red blue grey))]
     {:all w :red red :blue blue :grey grey :black black}))
 
 (defn- game-tiles []
-  (let [categorized-words      (take-colored-words)
-        all-words              (:all categorized-words)
-        red-words-set          (set (:red categorized-words))
-        blue-words-set         (set (:blue categorized-words))
-        black-words-set        (set (:black categorized-words))
-        index                  (atom -1)]
+  (let [categorized-words (take-colored-words)
+        all-words (:all categorized-words)
+        red-words-set (set (:red categorized-words))
+        blue-words-set (set (:blue categorized-words))
+        black-words-set (set (:black categorized-words))
+        index (atom -1)]
     (map
-     (fn [word]
-       (let [color (cond (contains? red-words-set word)   :red
-                     (contains? blue-words-set word)      :blue
-                     (contains? black-words-set word)     :black
-                     :else                                :grey)]
-         {:color color :word word :index (swap! index inc) :open? false}))
-     all-words)))
+      (fn [word]
+        (let [color (cond (contains? red-words-set word) :red
+                          (contains? blue-words-set word) :blue
+                          (contains? black-words-set word) :black
+                          :else :grey)]
+          {:color color :word word :index (swap! index inc) :open? false}))
+      all-words)))
 
 (defn default-db []
   {:name        "re-frame"
