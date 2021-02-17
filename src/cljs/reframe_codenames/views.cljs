@@ -1,34 +1,34 @@
 (ns reframe-codenames.views
   (:require
-    [re-frame.core :as re-frame]
-    [reframe-codenames.subs :as subs]
-    [reframe-codenames.events :as events]
-    [reframe-codenames.utils :as utils])
+   [re-frame.core :as re-frame]
+   [reframe-codenames.subs :as subs]
+   [reframe-codenames.events :as events]
+   [reframe-codenames.utils :as utils])
   (:require
-    ["react-bootstrap"
-     :refer
-     [Card
-      Button
-      ButtonGroup
-      Row
-      Col
-      Badge
-      Container
-      Accordion
-      FormControl
-      InputGroup
-      Alert]]
-    ["react-bootstrap/Card" :refer [Body Header Footer]]
-    ["react-bootstrap/Accordion"
-     :refer [Toggle Collapse]
-     :rename {Toggle   AccToggle
-              Collapse AccCollapse}]
-    ["react-bootstrap/InputGroup"
-     :refer [Text Prepend Append]
-     :rename {Text    IGText
-              Prepend IGPrepend
-              Append  IGAppend}]
-    ["react-social-icons" :refer [SocialIcon]]))
+   ["react-bootstrap"
+    :refer
+    [Card
+     Button
+     ButtonGroup
+     Row
+     Col
+     Badge
+     Container
+     Accordion
+     FormControl
+     InputGroup
+     Alert]]
+   ["react-bootstrap/Card" :refer [Body Header Footer]]
+   ["react-bootstrap/Accordion"
+    :refer [Toggle Collapse]
+    :rename {Toggle   AccToggle
+             Collapse AccCollapse}]
+   ["react-bootstrap/InputGroup"
+    :refer [Text Prepend Append]
+    :rename {Text    IGText
+             Prepend IGPrepend
+             Append  IGAppend}]
+   ["react-social-icons" :refer [SocialIcon]]))
 
 ; TODO - simplify booleans everywhere!
 
@@ -51,8 +51,8 @@
      [:>
       Body
       (map-indexed
-        (fn [index rule] [:p {:style {:text-align :left}} (str (inc index) ". " rule)])
-        rules)]]]])
+       (fn [index rule] [:p {:style {:text-align :left}} (str (inc index) ". " rule)])
+       rules)]]]])
 
 (defn grid-row [row-index items turn spy-master? disable?]
   [:>
@@ -63,40 +63,40 @@
     :margin     5
     :padding    5}
    (map-indexed
-     (fn [col-index item]
-       (let [{:keys [open? color]} item]
+    (fn [col-index item]
+      (let [{:keys [open? color]} item]
+        [:>
+         Col
+         {:key   (str "grid-cell-" (+ (* row-index 5) col-index))
+          :style {:width   "20vw"
+                  :padding 0
+                  :margin  2}}
          [:>
-          Col
-          {:key   (str "grid-cell-" (+ (* row-index 5) col-index))
-           :style {:width   "20vw"
-                   :padding 0
-                   :margin  2}}
-          [:>
-           Button
-           {:key      (str "grid-cell-" (+ (* row-index 5) col-index))
-            :class    [:board-grid-btn]
-            :variant  (if (and spy-master? open?) :info :light)
-            :style    {:border-radius   2
-                       :padding         5
-                       :width           "100%"
-                       :height          "10vh"
-                       :justify-content :center
-                       :font-size       "2.5vmin"
-                       :color           (when (or open? spy-master?) color)}
-            :disabled (or spy-master? open? disable?)
-            :size     :sm
-            :on-click #(re-frame/dispatch
-                         ; TODO - remove logic from view!
-                         (if (= color :black)
-                           [::events/announce-winner (utils/opp-color turn)]
-                           [::events/open-tile row-index col-index]))}
-           (:word item)]]))
-     items)])
+          Button
+          {:key      (str "grid-cell-" (+ (* row-index 5) col-index))
+           :class    [:board-grid-btn]
+           :variant  (if (and spy-master? open?) :info :light)
+           :style    {:border-radius   2
+                      :padding         5
+                      :width           "100%"
+                      :height          "10vh"
+                      :justify-content :center
+                      :font-size       "2.5vmin"
+                      :color           (when (or open? spy-master?) color)}
+           :disabled (or spy-master? open? disable?)
+           :size     :sm
+           :on-click #(re-frame/dispatch
+                       ; TODO - remove logic from view!
+                       (if (= color :black)
+                         [::events/announce-winner (utils/opp-color turn)]
+                         [::events/open-tile row-index col-index]))}
+          (:word item)]]))
+    items)])
 
 (defn grid [board-tiles turn spy-master? disable?]
   (->> (partition 5 board-tiles)
        (map-indexed
-         #(grid-row %1 %2 turn spy-master? disable?))))
+        #(grid-row %1 %2 turn spy-master? disable?))))
 
 (defn hint-badge [hint]
   (when (not (clojure.string/blank? hint))
@@ -170,14 +170,14 @@
   ; TODO - split this main-panel into multpple functions having their own subscriptions
   (let [spy-master? @(re-frame/subscribe [::subs/spy-master?])
         board-tiles @(re-frame/subscribe [::subs/board])
-        turn @(re-frame/subscribe [::subs/turn])
-        red-left (utils/left-tiles-count-by-color board-tiles :red)
-        blue-left (utils/left-tiles-count-by-color board-tiles :blue)
-        turn-over? @(re-frame/subscribe [::subs/turn-over?])
-        hint @(re-frame/subscribe [::subs/hint])
-        limit @(re-frame/subscribe [::subs/limit])
-        message @(re-frame/subscribe [::subs/message])
-        game-over? @(re-frame/subscribe [::subs/game-over?])]
+        turn        @(re-frame/subscribe [::subs/turn])
+        red-left    (utils/left-tiles-count-by-color board-tiles :red)
+        blue-left   (utils/left-tiles-count-by-color board-tiles :blue)
+        turn-over?  @(re-frame/subscribe [::subs/turn-over?])
+        hint        @(re-frame/subscribe [::subs/hint])
+        limit       @(re-frame/subscribe [::subs/limit])
+        message     @(re-frame/subscribe [::subs/message])
+        game-over?  @(re-frame/subscribe [::subs/game-over?])]
     (when (zero? red-left) (re-frame/dispatch-sync [::events/announce-winner :red]))
     (when (zero? blue-left) (re-frame/dispatch-sync [::events/announce-winner :blue]))
     [:>

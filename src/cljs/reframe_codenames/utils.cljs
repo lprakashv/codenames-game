@@ -6,7 +6,7 @@
 (defn capitalize [s]
   (clojure.string/capitalize (name s)))
 
-(defn get-messsage-for-type
+(defn get-message-for-type
   ([tpe]
    (case tpe
      :open-tile-turn-over {:status :info
@@ -30,7 +30,7 @@
 (defn left-tiles-count-by-color [board-tiles color]
   (->> board-tiles
        (filter
-         #(and
-            (not (:open? %))
-            (= color (:color %))))
+        #(and
+          (not (:open? %))
+          (= color (:color %))))
        (count)))

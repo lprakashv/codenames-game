@@ -1,10 +1,10 @@
 (ns reframe-codenames.core
   (:require
-    [reagent.dom :as rdom]
-    [re-frame.core :as re-frame]
-    [reframe-codenames.events :as events]
-    [reframe-codenames.views :as views]
-    [reframe-codenames.config :as config]))
+   [reagent.dom :as rdom]
+   [re-frame.core :as re-frame]
+   [reframe-codenames.events :as events]
+   [reframe-codenames.views :as views]
+   [reframe-codenames.config :as config]))
 
 
 (defn dev-setup []
