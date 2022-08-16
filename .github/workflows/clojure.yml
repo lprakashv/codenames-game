@@ -25,6 +25,4 @@ jobs:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: ./docs
         destination_dir: codenames
-    - name: Dynamic Badges
-      uses: Schneegans/dynamic-badges-action@v1.4.0
 
