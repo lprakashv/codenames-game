@@ -2,7 +2,7 @@
 
 # reframe-codenames
 
-This is a Static Web app to play Codenames game built on top of **clojurescript** and **re-frame**.
+This is an offline Single-Page Web app to play Codenames game built on top of **clojurescript** and **re-frame**.
 
 ### Screenshots
 Since, example speaks a thousand words!
