@@ -29,7 +29,7 @@ Since, example speaks a thousand words!
     </tr>
 </table>
 
-[**Play it Now!**](https://lprakashv.github.io/reframe-codenames/)
+[**Play it Now!**](https://lprakashv.github.io/codenames-game/)
 
 ### Features:
 * 400 built-in words.
