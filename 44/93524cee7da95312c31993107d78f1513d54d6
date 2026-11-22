@@ -1,0 +1,21 @@
+docs/index.html
+  s_72279f32cfd36c::t_f0654fd95b98a7 4
+.github/workflows/clojure.yml
+  s_72279f32cfd36c::t_f0654fd95b98a7 22-42
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "4493524cee7da95312c31993107d78f1513d54d6",
+  "prompts": {},
+  "sessions": {
+    "s_72279f32cfd36c": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a202c5-ffd3-7710-be6b-480d192959a7",
+        "model": "gpt-6-luna"
+      },
+      "human_author": "Lalit Vatsal <lvatsal@splunk.com>"
+    }
+  }
+}
