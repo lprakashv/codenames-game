@@ -1,6 +1,7 @@
 (ns reframe-codenames.events
   (:require
    [re-frame.core :as re-frame]
+   [clojure.string :as str]
    [reframe-codenames.db :as db]
    [reframe-codenames.utils :as utils]
    [day8.re-frame.tracing :refer [fn-traced]]))
@@ -27,7 +28,7 @@
             (let [{:keys [spy-master? hint limit turn]} d
                   valid-hint? (and
                                (> limit 0)
-                               (not (clojure.string/blank? hint)))]
+                               (not (str/blank? hint)))]
               (cond
                 (or (not spy-master?) valid-hint?) (-> d
                                                        (assoc :spy-master? (not spy-master?))
@@ -46,7 +47,7 @@
                     (update v :limit dec)
                     (assoc v :turn-over?
                              (or
-                              (= (utils/opp-color turn) tile-color)
+                              (not= turn tile-color)
                               (zero? (:limit v))))
                     (if (:turn-over? v)
                       (merge v
