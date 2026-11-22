@@ -38,16 +38,22 @@ jobs:
         from pathlib import Path
 
         tag_id = os.environ.get("GOOGLE_TAG_ID", "").strip()
-        if not re.fullmatch(r"[A-Za-z0-9-]+", tag_id):
+        if tag_id and not re.fullmatch(r"[A-Za-z0-9-]+", tag_id):
             raise SystemExit("Set a valid GOOGLE_TAG_ID in GitHub Actions variables.")
 
         index = Path("docs/index.html")
         template = index.read_text()
         marker = "__GOOGLE_TAG_ID__"
-        if marker not in template:
-            raise SystemExit("Google tag marker is missing from docs/index.html.")
+        start = "    <!-- Google tag start -->\n"
+        end = "    <!-- Google tag end -->\n"
+        if template.count(marker) != 1 or template.count(start) != 1 or template.count(end) != 1:
+            raise SystemExit("Google tag markers are missing or duplicated in docs/index.html.")
 
-        index.write_text(template.replace(marker, tag_id))
+        before, tag_block = template.split(start)
+        tag_block, after = tag_block.split(end)
+        if marker not in tag_block:
+            raise SystemExit("Google tag ID marker is outside the tag block.")
+        index.write_text(before + (tag_block.replace(marker, tag_id) if tag_id else "") + after)
         PY
     - name: Deploy to Github Pages
       if: github.event_name == 'push'

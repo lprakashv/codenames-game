@@ -33,7 +33,7 @@ Since, example speaks a thousand words!
 
 ### CI and deployment
 
-GitHub Actions installs Leiningen and the npm dependencies, runs `lein test`, and builds the app. Pull requests run these checks without deploying. Pushes to `main` also deploy the `docs` directory to GitHub Pages. Set the repository Actions variable `GOOGLE_TAG_ID` to the Google tag ID before deployment.
+GitHub Actions installs Leiningen and the npm dependencies, runs `lein test`, and builds the app. Pull requests run these checks without deploying. Pushes to `main` also deploy the `docs` directory to GitHub Pages. To enable analytics, set the repository Actions variable `GOOGLE_TAG_ID` to the Google tag ID. If it is unset, the site deploys without the Google tag.
 
 See [DEV-HELP.md](DEV-HELP.md) for local development and build instructions.
 
