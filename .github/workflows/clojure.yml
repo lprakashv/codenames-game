@@ -10,16 +10,25 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
+    - name: Set up Leiningen
+      uses: DeLaGuardo/setup-clojure@13.7
+      with:
+        lein: 2.11.2
     - name: Install dependencies
-      run: lein deps
+      run: |
+        lein deps
+        npm ci
     - name: Run tests
       run: lein test
     - name: Prod Build
       run: lein do clean, garden once, release
     - name: Inject Google tag ID
+      if: github.event_name == 'push'
       env:
         GOOGLE_TAG_ID: ${{ vars.GOOGLE_TAG_ID }}
       run: |
@@ -41,6 +50,7 @@ jobs:
         index.write_text(template.replace(marker, tag_id))
         PY
     - name: Deploy to Github Pages
+      if: github.event_name == 'push'
       uses: peaceiris/actions-gh-pages@v3
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}

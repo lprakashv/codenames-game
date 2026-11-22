@@ -71,6 +71,7 @@ dependency management)
 8. (Optional) Download project dependencies:
     ```sh
     lein deps
+    npm ci
     ```
 
 ### Browser Setup
