@@ -19,6 +19,27 @@ jobs:
       run: lein test
     - name: Prod Build
       run: lein do clean, garden once, release
+    - name: Inject Google tag ID
+      env:
+        GOOGLE_TAG_ID: ${{ vars.GOOGLE_TAG_ID }}
+      run: |
+        python3 - <<'PY'
+        import os
+        import re
+        from pathlib import Path
+
+        tag_id = os.environ.get("GOOGLE_TAG_ID", "").strip()
+        if not re.fullmatch(r"[A-Za-z0-9-]+", tag_id):
+            raise SystemExit("Set a valid GOOGLE_TAG_ID in GitHub Actions variables.")
+
+        index = Path("docs/index.html")
+        template = index.read_text()
+        marker = "__GOOGLE_TAG_ID__"
+        if marker not in template:
+            raise SystemExit("Google tag marker is missing from docs/index.html.")
+
+        index.write_text(template.replace(marker, tag_id))
+        PY
     - name: Deploy to Github Pages
       uses: peaceiris/actions-gh-pages@v3
       with:
