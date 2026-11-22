@@ -1,0 +1,21 @@
+docs/index.html
+  s_72279f32cfd36c::t_f0456d6f18dd3a 4-9
+.gitignore
+  s_72279f32cfd36c::t_464e9c1e9757fb 17-21
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "bbac96622b8818b1f05df2e3fc0033d2104f2a0e",
+  "prompts": {},
+  "sessions": {
+    "s_72279f32cfd36c": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a202c5-ffd3-7710-be6b-480d192959a7",
+        "model": "gpt-6-luna"
+      },
+      "human_author": "Lalit Vatsal <lvatsal@splunk.com>"
+    }
+  }
+}
