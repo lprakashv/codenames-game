@@ -16,7 +16,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Set up Leiningen
-      uses: DeLaGuardo/setup-clojure@13.7
+      uses: DeLaGuardo/setup-clojure@13.7.0
       with:
         lein: 2.11.2
     - name: Install dependencies
