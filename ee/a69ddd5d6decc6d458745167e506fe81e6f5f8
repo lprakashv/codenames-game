@@ -1,0 +1,23 @@
+README.md
+  s_6b703b6ab0ec58::t_eff1152b56e844 34-39
+DEV-HELP.md
+  s_6b703b6ab0ec58::t_eff1152b56e844 74
+.github/workflows/clojure.yml
+  s_6b703b6ab0ec58::t_eff1152b56e844 13-14,17-21,23-25,31,53
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "eea69ddd5d6decc6d458745167e506fe81e6f5f8",
+  "prompts": {},
+  "sessions": {
+    "s_6b703b6ab0ec58": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a202d6-edaa-7553-955c-f43f7d30564c",
+        "model": "gpt-6.1-terra"
+      },
+      "human_author": "Lalit Vatsal <lvatsal@splunk.com>"
+    }
+  }
+}
